@@ -294,6 +294,14 @@ data:extend({
         subgroup = "virtual-signal",
         order = "z3"
     },
+    {
+        type = "virtual-signal",
+        name = "ring-timer",
+        icon = "__transport-ring-teleporter__/graphics/icons/ring-timer.png",
+        icon_size = 64,
+        subgroup = "virtual-signal",
+        order = "z4"
+    },
     { -- This exists to block movement through the rings while teleporter animation is active
         type = "simple-entity",
         name = "ring-teleporter-barrier",

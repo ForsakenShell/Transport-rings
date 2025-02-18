@@ -40,7 +40,7 @@ local function remap_teleporters()
                 create_build_effect_smoke = true,
             }
             renderer.destructible = false
-            storage.ring_teleporter_teleporters[teleporter.unit_number] = {entity = teleporter, renderer = renderer, occupied = false}
+            storage.ring_teleporter_teleporters[teleporter.unit_number] = {entity = teleporter, renderer = renderer, occupied = false, last_teleport = 0}
             local poskey = util.poskey(teleporter)
             storage.ring_teleporter_nicknames[poskey] = storage.ring_teleporter_nicknames[poskey] or util.backername()
         end
@@ -294,6 +294,27 @@ local function get_id_no_conditions(entity)
     return nil
 end
 
+local function get_timer_signal(entity)
+    local signal = 0
+    if entity and entity.valid then
+        local network_red = entity.get_circuit_network(defines.wire_connector_id.circuit_red)
+        local network_green = entity.get_circuit_network(defines.wire_connector_id.circuit_green)
+        if network_red then
+            local signal = network_red.get_signal({type="virtual", name="ring-timer"})
+            if signal and signal ~= 0 then
+                return signal
+            end
+        end
+        if network_green then
+            local signal = network_green.get_signal({type="virtual", name="ring-timer"})
+            if signal and signal ~= 0 then
+                return signal
+            end
+        end
+    end
+    return signal
+end
+
 local function timed_teleport(src_teleporter_data, dest_teleporter_data)
     local src_teleporter = src_teleporter_data.entity
     local dest_teleporter = dest_teleporter_data.entity
@@ -335,6 +356,7 @@ local function timed_teleport_animation(src_teleporter_data, dest_teleporter_dat
     local src_teleporter = src_teleporter_data.entity
     local dest_teleporter = dest_teleporter_data.entity
     if src_teleporter and src_teleporter.valid and dest_teleporter and dest_teleporter.valid then
+        src_teleporter_data.last_teleport = game.tick
         src_teleporter.energy = src_teleporter.energy - 1000000000 * storage.power_cost_multiplier
         dest_teleporter.energy = dest_teleporter.energy - 1000000000 * storage.power_cost_multiplier
         animate_teleporter(src_teleporter)
@@ -792,7 +814,7 @@ local function on_built(event)
             create_build_effect_smoke = true,
         }
         renderer.destructible = false
-        storage.ring_teleporter_teleporters[entity.unit_number] = {entity = entity, renderer = renderer, occupied = false}
+        storage.ring_teleporter_teleporters[entity.unit_number] = {entity = entity, renderer = renderer, occupied = false, last_teleport = 0}
         local poskey = util.poskey(entity)
         storage.ring_teleporter_nicknames[poskey] = util.backername()
         update_GUI_for_everyone()
@@ -814,7 +836,7 @@ local function on_built(event)
             create_build_effect_smoke = true,
         }
         renderer.destructible = false
-        storage.ring_teleporter_teleporters[teleporter.unit_number] = {entity = teleporter, renderer = renderer, occupied = false}
+        storage.ring_teleporter_teleporters[teleporter.unit_number] = {entity = teleporter, renderer = renderer, occupied = false, last_teleport = 0}
         local poskey = util.poskey(teleporter)
         storage.ring_teleporter_nicknames[poskey] = util.backername()
         entity.destroy()
@@ -896,6 +918,10 @@ local function GUI_update()
     end
 end
 
+local function timer_met(data, timer)
+    return game.tick - data.last_teleport > (timer - 1) * 60
+end
+
 -- Handling signals
 script.on_nth_tick(30, function(event)
     -- Process each ring-teleporter
@@ -903,20 +929,28 @@ script.on_nth_tick(30, function(event)
         if not data.occupied then
             local entity = data.entity
             if entity and entity.valid then
-                local network_red = entity.get_circuit_network(defines.wire_connector_id.circuit_red)
-                local network_green = entity.get_circuit_network(defines.wire_connector_id.circuit_green)
-                local triggered = false
-                if network_red then
-                    local signal = network_red.get_signal({type="virtual", name="goto-ring-id"})
-                    if signal and signal ~= 0 and entity.energy >= 999999999 * storage.power_cost_multiplier then -- 1 GJ
-                        signal_teleport(data, signal)
-                        triggered = true
-                    end
+                local networks = {}
+                local redNetwork = entity.get_circuit_network(defines.wire_connector_id.circuit_red)
+                if redNetwork then
+                    table.insert(networks, redNetwork)
                 end
-                if not triggered and network_green then
-                    local signal = network_green.get_signal({type="virtual", name="goto-ring-id"})
-                    if signal and signal ~= 0 and entity.energy >= 999999999 * storage.power_cost_multiplier then -- 1 GJ
-                        signal_teleport(data, signal)
+                local greenNetwork = entity.get_circuit_network(defines.wire_connector_id.circuit_green)
+                if greenNetwork then
+                    table.insert(networks, greenNetwork)
+                end
+                for _, network in ipairs(networks) do
+                    local signal = network.get_signal({type="virtual", name="goto-ring-id"})
+                    if signal and signal ~= 0 and entity.energy >= 999999999 * storage.power_cost_multiplier then
+                        local timer = get_timer_signal(entity)
+                        if timer == 0 then
+                            signal_teleport(data, signal)
+                            break  -- Exit network loop, already decided to teleport
+                        else
+                            if timer_met(data, timer) then
+                                signal_teleport(data, signal)
+                            end
+                            break
+                        end
                     end
                 end
             end
@@ -924,6 +958,7 @@ script.on_nth_tick(30, function(event)
     end
     GUI_update()
 end)
+
 
 script.on_event(defines.events.on_tick, function(event)
     local current_tick = event.tick

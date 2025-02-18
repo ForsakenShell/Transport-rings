@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 18.02.2025
+  Features:
+    - Automatic timer mode. Given timer signal, the goto signal will no longer trigger teleportation. Instead it will wait for the timer amount, teleport to goto signal and then the loop starts again. If scheduled timer teleport is missed (no power for example), then it will teleport as soon as possible. Minimum time step is 5 seconds.
+---------------------------------------------------------------------------------------------------
 Version: 0.2.9
 Date: 17.02.2025
   Bugfixes:
