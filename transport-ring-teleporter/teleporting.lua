@@ -77,9 +77,17 @@ local function teleport_train(entity, target_surface, target_position)
     end
 end
 
+local ignoredTypes = {
+    ["entity-ghost"] = true,
+    ["tile-ghost"] = true,
+    ["tile"] = true,
+    ["deconstructible-tile-proxy"] = true,
+    ["optimized-decorative"] = true
+}
+
 function Teleporting.ring_teleport(entity, target_surface, target_position)
     if not entity.valid then return end
-    if Teleporter_ignored_entities[entity.name] or entity.type == "entity-ghost" then return end
+    if Teleporter_ignored_entities[entity.name] or ignoredTypes[entity.type] then return end
 
     if util.can_vanilla_teleport(entity) then
         entity.teleport(target_position, target_surface, true)
