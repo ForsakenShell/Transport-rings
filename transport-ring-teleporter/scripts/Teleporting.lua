@@ -1,8 +1,34 @@
-local util = require("util")
+local Util = require( "scripts/Util" )
 local Teleporting = {}
 
+local ignored_entities = {
+    [ "ring-teleporter" ] = true,
+    [ "ring-teleporter-sprite" ] = true,
+    [ "ring-teleporter-back" ] = true,
+    [ "ring-teleporter-front" ] = true,
+    [ "ring-teleporter-barrier" ] = true,
+}
+
+local ignored_types = {
+    ["entity-ghost"] = true,
+    ["tile-ghost"] = true,
+    ["tile"] = true,
+    ["deconstructible-tile-proxy"] = true,
+    ["optimized-decorative"] = true
+}
+
+
+local PLAYER_TELEPORT_SOUND = "player_post_teleport_sfx"
+
+
+local function player_post_teleport_sfx( player )
+    player.play_sound{ path = "ring-end", position = player.position }
+end
+
+
+
 -- Main teleport function
-local function teleport_entity(entity, target_surface, target_position, mapping)
+local function teleport_entity( entity, target_surface, target_position, mapping )
     if not (entity and target_surface and target_position) then return end
     local new = entity.clone{position={x = target_position.x, y = target_position.y}, surface=target_surface, force=entity.force, create_build_effect_smoke=false}
     if new then
@@ -77,38 +103,39 @@ local function teleport_train(entity, target_surface, target_position)
     end
 end
 
-local ignoredTypes = {
-    ["entity-ghost"] = true,
-    ["tile-ghost"] = true,
-    ["tile"] = true,
-    ["deconstructible-tile-proxy"] = true,
-    ["optimized-decorative"] = true
-}
-
-function Teleporting.ring_teleport(entity, target_surface, target_position)
+function Teleporting.ring_teleport( entity, target_surface, target_position )
     if not entity.valid then return end
-    if Teleporter_ignored_entities[entity.name] or ignoredTypes[entity.type] then return end
+    if ignored_entities[ entity.name ] or ignored_types[ entity.type ] then return end
 
-    if util.can_vanilla_teleport(entity) then
-        entity.teleport(target_position, target_surface, true)
+    if Util.can_vanilla_teleport( entity ) then
+        entity.teleport( target_position, target_surface, true )
         if entity.type == "character" then
             local player = entity.player
             if player and player.valid then
                 local force = player.force
-                if not force.is_chunk_charted(target_surface, target_position) then
-                    force.chart(target_surface, {target_position, target_position})
+                if not force.is_chunk_charted( target_surface, target_position ) then
+                    force.chart( target_surface, { target_position, target_position } )
                 end
-                util.schedule_after(1, "After_player_teleport_sound", {player, target_position}) -- Need one tick for charting
+                Util.schedule_after( 1, PLAYER_TELEPORT_SOUND, { player } ) -- Need one tick for charting
             end
         end
         return
     end
 
     if entity.train then
-        teleport_train(entity, target_surface, target_position)
+        teleport_train( entity, target_surface, target_position )
     else
-        teleport_entity(entity, target_surface, target_position)
+        teleport_entity( entity, target_surface, target_position )
     end
 end
+
+
+
+
+-- Map functions that can be scheduled.
+Util.map_functions{
+    [ PLAYER_TELEPORT_SOUND ] = player_post_teleport_sfx,
+}
+
 
 return Teleporting

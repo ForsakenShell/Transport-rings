@@ -1,4 +1,62 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.1
+Date: 15.12.2025
+  Bugfixes:
+    - Uses nil check for blueprints.
+	- Now displays Space Age as a dependency.
+---------------------------------------------------------------------------------------------------
+Version: 0.4.0
+Date: 14.12.2025
+  Features:
+    - Overhauled Manual Dialing UI for advanced users managing large teleporter networks:
+      - Separates ring-id from location;
+      - New columns to show teleporter signals: ring-id, goto-id, timer and, protection status (shield);
+      - Added filtering options for location (surface), ring-id, goto-id, protected status, nicknames (including supporting icons) and, force;
+      - Header, filter and, viewing teleporter always stay at the top of the UI window when scrolling;
+      - Selected teleporter is in the header and never filtered out;
+      - Sending/Receiving/Low power/Waiting status shown in teleport button.
+    - Custom status area of the teleporter (the mouse-over sidebar) will now show:
+      - LED status (see changes below);
+      - Protection status: circle = open, shield = protected;
+      - Teleporter nickname;
+      - Teleporter signals: ring-id, goto-id and, wait timer (and remaining timeout).
+    - Added "teleporter ring output" to get feedback from the teleporter, jam wires into the front grill of the display and read:
+      - LED status (1=green, 2=yellow, 3=red);
+      - Low power (1 = low power);
+      - Occupied status (0 = unoccupied, 1 = sending, -1 = recieving);
+      - Waiting (timeout remaining in seconds);
+      - Custom status shows same LED status, protection and, name as the display;
+      - Recorded in blueprints so wiring is maintained;
+      - Will open the manual dialing for the teleporter when clicked on.
+      - Placement item now has graphics and collision.
+    - A fake train stop is created for the teleporter:
+      - Shows the teleporter name on the map with the teleporter icon prefixed to it's nickname;
+      - This is also the base graphic entity of the teleporter (effects blueprinting, see Known "Features" below);
+      - Clicking on the stop on the map will open the Manual Dialing UI for the teleporter;
+      - Gives the teleporter parameterized blueprint support for it's nickname (see below).
+    - Full blueprint support:
+     - Through the fake train stop, the teleporter nickname is saved in the blueprint and applied on placement and is fully parameterized;
+     - Teleporter output port is properly blueprinted so complete wiring of your design isn't an issue.
+  Changes:
+    - Status LED (both in custom status and manual dialing UI) - green = ready, yellow = not ready (sending/receiving/waiting), red = low charge.
+    - "Charge Level" in manual dialing UI now shows the actual accumulator charge level - exactly the same as you see in the mouse-over sidebar information.
+    - Teleportation animations from "simple-entity-with-force" to "animation" using frame offsets, meaning, teleportations can happen as soon decided instead of waiting for key framing every 5th second (multiples of 300 game ticks) - This means instantly for manual dialing and no more than 30 ticks for circuit control.
+    - Teleporters will no longer "remember" signals and try to teleport when power is charged enough.  Now, if there isn't enough power and a teleport is signaled, it will just be ignored.  This is to make the teleporters behave in a manner consistent with vanilla entities as well as allow for circuit logic to cancel the request (by setting the value to 0).
+    - Input circuit signals are combined between red and green wires instead of returning the red or green value (in that order), to behave consistently with vanilla end-point entities that use the combined values (assemblers, train stops, etc).
+    - Major code overhaul to optimize and smooth out gameplay to prevent jitters caused by bulk batch processing.
+  Bugfixes:
+    - There is now proper visual representation of the teleporter when placing and in blueprints, you will need to place your old blueprints and remake them for this change to take effect.
+  Known "Features":
+    - Blueprinted teleporters with the "name parameter" (fake train stop) have a couple caveats:
+      - First, the blueprint will be restricted to placement on the 2x2 rail grid;
+      - Second, removing it from the blueprint means there will be no teleporter sprite in the blueprint and the teleporter will be given a random backer name on placement, and the teleporters blueprinted [parameterized] nickname will be lost;
+      - Note: Neither of these "features" will effect the function of the teleporter or circuit wiring of the blueprint;
+      - Bear these details in mind when designing blueprints.
+  Known Bugs:
+    - Placement item does not show power connection.
+  Author:
+	- This QoL, UI, performance overhaul was written by 1000101
+---------------------------------------------------------------------------------------------------
 Version: 0.3.2
 Date: 20.04.2025
   Bugfixes:
