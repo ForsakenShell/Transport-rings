@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.4.2 WIP
-Date: 14.12.2025 (TBD on release)
+Version: 0.4.2
+Date: 16.12.2025
   Features:
     - Added "Basic/Advanced" Manual Dialing UI toggle, UI will open in "basic" mode until toggled into "advanced", setting is remembered per-player.
     - Teleporter now supports quality - enjoy higher capacity storage in the accumulator and higher health of the teleporter before the biters eat it.
