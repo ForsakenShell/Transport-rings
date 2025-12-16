@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.3
+Date: 16.12.2025
+  Features:
+    - Added a basic "Tips and tricks" section.
+  Bugfixes:
+    - Factoriopedia now displays ring platform animation correctly.
+---------------------------------------------------------------------------------------------------
 Version: 0.4.2
 Date: 16.12.2025
   Features:

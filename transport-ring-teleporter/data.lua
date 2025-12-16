@@ -150,7 +150,7 @@ data:extend({
         circuit_wire_max_distance = 20,
         alert_icon_shift = {0.125, 0.5},
         factoriopedia_simulation = {
-            init = "game.simulation.camera_position = {0, 0}\ngame.surfaces[1].create_entity{name = \"ring-teleporter-sprite\", position = {0, 0}, raise_built = false, create_build_effect_smoke = false}    game.surfaces[1].create_entity{name = \"ring-teleporter-back\", position = {0, 0}, raise_built = false, create_build_effect_smoke = false}    game.surfaces[1].create_entity{name = \"ring-teleporter-front\", position = {0, 0}, raise_built = false, create_build_effect_smoke = false}    game.simulation.camera_zoom = 0.8"
+            init = "game.simulation.camera_position = {0, 0}\ngame.surfaces[1].create_entity{name = \"ring-teleporter-back\", position = {0, 0}, raise_built = false, create_build_effect_smoke = false}    game.surfaces[1].create_entity{name = \"ring-teleporter-front\", position = {0, 0}, raise_built = false, create_build_effect_smoke = false}    game.simulation.camera_zoom = 0.8"
         },
         localised_description = {"entity-description.ring-teleporter", Util.format_power_string( Util.power_per_teleport(), "J", " ")},
         --hidden_in_factoriopedia = true,
@@ -680,3 +680,34 @@ data:extend({
     },
 
 })
+
+
+local tips =
+{
+  {
+    type = "tips-and-tricks-item-category",
+    name = "trt-guide",
+    order = "t-[transport-ring-teleporter]"
+  },
+  {
+    type = "tips-and-tricks-item",
+    name = "transport-ring-teleporter",
+    localised_name = {"custom.tips-title"},
+    localised_description = {"custom.tips-description"},
+    order = "a",
+    trigger =
+    {
+      type = "research",
+      technology = "teleporter-rings"
+    },
+	starting_status = "unlocked",
+    is_title = true,
+    indent = 0,
+    icon = "__transport-ring-teleporter__/graphics/technology/rings.png",
+	icon_size = 656,
+    category = "trt-guide",
+  }
+}
+
+
+data:extend(tips)
