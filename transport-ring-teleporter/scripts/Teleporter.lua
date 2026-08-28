@@ -670,7 +670,9 @@ local function Teleporter_update_output_port( data )
             -- Now read trains
             if train_limit > 0 then
                 for _, train in pairs( trains ) do
-                    train_count = train_count + 1
+                    if read_entity then
+                        train_count = train_count + 1
+                    end
                     local carriages = train.carriages
                     for index, carriage in ipairs( carriages ) do
                         if read_entity then
