@@ -720,10 +720,10 @@ local function Teleporter_update_output_port( data )
                     add_to_status_section( { value = { type = "virtual", name = "signal-T", quality = "normal" }, min = train_count } )
                 end
                 if spider_count > 0 then
-                    add_to_status_section( { value = { type = "virtual", name = "signal-S", quality = "normal" }, min = train_count } )
+                    add_to_status_section( { value = { type = "virtual", name = "signal-S", quality = "normal" }, min = spider_count } )
                 end
                 if vehicle_count > 0 then
-                    add_to_status_section( { value = { type = "virtual", name = "signal-V", quality = "normal" }, min = train_count } )
+                    add_to_status_section( { value = { type = "virtual", name = "signal-V", quality = "normal" }, min = vehicle_count } )
                 end
             end
             
