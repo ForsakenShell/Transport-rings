@@ -737,7 +737,7 @@ local tips =
         name = "trt-teleporter",
         localised_name = { "custom.tips-title" },
         localised_description = { "custom.tips-description" },
-        order = "a",
+        order = "[trt]-g1-1",
         trigger =
         {
             type = "research",
@@ -748,7 +748,7 @@ local tips =
         indent = 0,
         icon = "__transport-ring-teleporter__/graphics/technology/rings.png",
         icon_size = 656,
-        category = "[trt]-g1-1",
+        category = "trt-guide",
     }
 }
 
