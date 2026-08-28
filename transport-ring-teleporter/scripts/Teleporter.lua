@@ -520,10 +520,17 @@ local function Teleporter_update_output_port( data )
     
     -- Add one new section for the status signals
     local status_section = behavior.add_section()
-    local status_slot = 1
-    local function add_to_status_section( signal )
-        status_section.set_slot( status_slot, signal )
-        status_slot = status_slot + 1
+    local function add_to_status_section( name, value )
+        -- Only add non-zero value signals to be consistent with vanilla (for anything inspecting the output signals via Lua)
+        if value == 0 then return end
+        status_section.set_slot( status_section.filters_count + 1, {
+            value = {
+                type = "virtual",
+                name = name,
+                quality = "normal"
+            },
+                min = value
+        } )
     end
     
     if status_section then
@@ -541,12 +548,8 @@ local function Teleporter_update_output_port( data )
             [ SIGNAL_STATUS_WAITING ] = function() return remaining > 0 and math.floor( remaining + 1.0 ) or 0 end,
         }
         
-        -- Only add non-zero value signals to be consistent with vanilla (for anything inspecting the output signals via Lua)
         for name, test in pairs( signal_tests ) do
-            local value = test()
-            if value ~= 0 then
-                add_to_status_section( { value = { type = "virtual", name = name, quality = "normal" }, min = value } )
-            end
+            add_to_status_section( name, test() )
         end
         
     end
@@ -715,18 +718,10 @@ local function Teleporter_update_output_port( data )
             
             -- Add the base entity type counts to the status section
             if read_entity then
-                if player_count > 0 then
-                    add_to_status_section( { value = { type = "virtual", name = "signal-C", quality = "normal" }, min = player_count } )
-                end
-                if train_count > 0 then
-                    add_to_status_section( { value = { type = "virtual", name = "signal-T", quality = "normal" }, min = train_count } )
-                end
-                if spider_count > 0 then
-                    add_to_status_section( { value = { type = "virtual", name = "signal-S", quality = "normal" }, min = spider_count } )
-                end
-                if vehicle_count > 0 then
-                    add_to_status_section( { value = { type = "virtual", name = "signal-V", quality = "normal" }, min = vehicle_count } )
-                end
+                add_to_status_section( "signal-C", player_count )
+                add_to_status_section( "signal-T", train_count )
+                add_to_status_section( "signal-S", spider_count )
+                add_to_status_section( "signal-V", vehicle_count )
             end
             
         end
