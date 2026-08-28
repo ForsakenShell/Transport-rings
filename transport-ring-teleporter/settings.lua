@@ -43,7 +43,7 @@ data:extend({
         type = "double-setting",
         name = "trt-power-multiplier",
         setting_type = "startup",
-        default_value = 1,
+        default_value = Util.K2SE_Installed() and 5 or 1,
         minimum_value = 0,
         maximum_value = 10000,
         order = "[trt]-c1"
@@ -52,7 +52,7 @@ data:extend({
         type = "double-setting",
         name = "trt-buffer-multiplier",
         setting_type = "startup",
-        default_value = 1,
+        default_value = Util.K2SE_Installed() and 10 or 2,
         minimum_value = 0,
         maximum_value = 10000,
         order = "[trt]-c2"
