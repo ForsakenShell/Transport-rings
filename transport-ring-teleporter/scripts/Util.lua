@@ -209,7 +209,7 @@ function Util.power_per_teleport()
 end
 
 function Util.power_buffer()
-    return math.max( Util.power_per_teleport(), settings.startup[ "trt-buffer-multiplier" ].value * 2000000000 )
+    return math.max( Util.power_per_teleport(), settings.startup[ "trt-buffer-multiplier" ].value * 1000000000 )
 end
 
 function Util.grid_alignment()
