@@ -589,7 +589,7 @@ local function Teleporter_update_output_port( data )
             -- Quality based signals
             local function signals_from_counts( target, source, signal_type )
                 -- Only add non-zero value signals to be consistent with vanilla (for anything inspecting the output signals via Lua)
-                local slot = 1
+                local slot = target.filters_count + 1
                 for _, bucket in pairs( source ) do
                     if bucket and bucket.count > 0 then
                         target.set_slot( slot, { value = { type = signal_type, name = bucket.name, quality = bucket.quality }, min = bucket.count } )
