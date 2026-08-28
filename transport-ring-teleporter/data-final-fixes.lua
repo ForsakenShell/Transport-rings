@@ -1,3 +1,8 @@
+local Util = require( "scripts/Util" )
+
+local recipe_groups = Util.recipe_groups
+local recipe_group = Util.recipe_group()
+
 -- DEV NOTE: 19/08/2026 : What is the point of these filters? Why do we need to do this?
 
 --[[
@@ -27,12 +32,48 @@ end
 
 -- Mk1 Tech
 
+local mk1_prereq = ( recipe_group == recipe_groups.krastorio ) and
+    {
+        "se-linked-container",
+        "kr-planetary-teleporter"
+    } or
+    {
+        "space-science-pack",
+        "circuit-network"
+    }
+
+local mk1_cost = ( recipe_group == recipe_groups.krastorio ) and 2000 or 1000
+local mk1_ingredients = ( recipe_group == recipe_groups.krastorio ) and
+    {
+        { "automation-science-pack", 1 },
+        { "logistic-science-pack", 1 },
+        { "chemical-science-pack", 1 },
+        { "production-science-pack", 1 },
+        { "utility-science-pack", 1 },
+        { "space-science-pack", 1 },
+        { "se-astronomic-science-pack-4", 1 },
+        { "se-biological-science-pack-4", 1 },
+        { "se-energy-science-pack-4", 1 },
+        { "se-material-science-pack-4", 1 },
+        { "se-deep-space-science-pack-4", 1 },
+        { "se-kr-matter-science-pack-2", 1 },
+        { "kr-singularity-tech-card", 1 }
+    } or
+    {
+        { "automation-science-pack", 1 },
+        { "logistic-science-pack", 1 },
+        { "chemical-science-pack", 1 },
+        { "production-science-pack", 1 },
+        { "utility-science-pack", 1 },
+        { "space-science-pack", 1 }
+    }
+
 local mk1_tech = {
     type = "technology",
     name = "trt-mk1",
     icon = "__transport-ring-teleporter__/graphics/technology/rings.png",
     icon_size = 656,
-    prerequisites = { "space-science-pack", "circuit-network" },
+    prerequisites = mk1_prereq,
     effects = {
         {
             type = "unlock-recipe",
@@ -44,15 +85,8 @@ local mk1_tech = {
         },
     },
     unit = {
-        count = 1000,
-        ingredients = {
-            { "automation-science-pack", 1 },
-            { "logistic-science-pack", 1 },
-            { "chemical-science-pack", 1 },
-            { "production-science-pack", 1 },
-            { "utility-science-pack", 1 },
-            { "space-science-pack", 1 }
-        },
+        count = mk1_cost,
+        ingredients = mk1_ingredients,
         time = 60
     },
 }
